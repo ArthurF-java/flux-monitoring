@@ -3,6 +3,7 @@ name: Validation with kubeconform
 on:
   pull_request:
     types: [opened, reopened]
+  push:
 
 jobs:
   kubeconform-check:
