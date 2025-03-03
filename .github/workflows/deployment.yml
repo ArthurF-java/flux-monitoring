@@ -1,0 +1,38 @@
+name: Validation with kubeconform
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  kubeconform-check:
+    name: Check manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Install kubeconform
+        uses: yokawasa/action-setup-kube-tools@v0.11.2
+        with:
+          kubeconform: '0.6.7'
+
+      - name: Validate manifests
+        id: validation
+        run: |
+          set +e #continue run even if one command fails
+          RESULT=`kubeconform --summary -schema-location default -schema-location https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json app`
+          echo "$RESULT"
+          echo "RESULT=$RESULT" >> $GITHUB_OUTPUT
+
+      - name: Slack notification
+        uses: rtCamp/action-slack-notify@v2
+        with:
+          status: ${{ job.status }}
+        env:
+          SLACK_CHANNEL: afon-check
+          SLACK_MESSAGE: "${{ steps.validation.outputs.RESULT }} "
+          SLACK_TITLE: Result of k8s manifests validation is ${{ job.status }}
+          SLACK_USERNAME: rtCamp
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_COLOR: ${{ job.status }}
