@@ -16,3 +16,4 @@ spec:
         name: grafana
         namespace: flux-system
       interval: 10m
+
