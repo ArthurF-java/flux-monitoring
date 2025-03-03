@@ -22,7 +22,7 @@ jobs:
         id: validation
         run: |
           set +e #continue run even if one command fails
-          RESULT=`kubeconform --summary -schema-location default -schema-location https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json app`
+          RESULT=`kubeconform --summary -schema-location default -schema-location https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json monitoring`
           echo "$RESULT"
           echo "RESULT=$RESULT" >> $GITHUB_OUTPUT
 
